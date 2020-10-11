@@ -93,7 +93,7 @@ public abstract class AsyncCommand extends Command implements PluginIdentifiable
      */
     // public abstract int executeCommand(Sender sender, String commandLabel, String[] args);
 
-    public abstract int executeCommand(CommandSender sender, String commandLabel, String[] args);
+    public abstract ExitCode executeCommand(CommandSender sender, String commandLabel, String[] args);
 
     /**
      * This is a vastly simplified command class. We only check if the plugin is
@@ -121,15 +121,15 @@ public abstract class AsyncCommand extends Command implements PluginIdentifiable
             public Boolean call() {
                 try {
                     switch (self.executeCommand(sender, commandLabel, args)) {
-                        case 0:
+                        case EXIT_SUCCESS:
                             break;
-                        case 1:
+                        case EXIT_INVALID_SYNTAX:
                             self.onSyntaxError(sender, commandLabel, args);
                             break;
-                        case 2:
+                        case EXIT_PERMISSION_DENIED:
                             self.onPermissionDenied(sender, commandLabel, args);
                             break;
-                        case 3:
+                        case EXIT_ERROR:
                             self.onError(sender, commandLabel, args);
                             break;
                         default:

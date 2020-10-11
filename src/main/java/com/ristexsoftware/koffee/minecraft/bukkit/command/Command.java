@@ -86,7 +86,7 @@ public abstract class Command extends org.bukkit.command.Command implements Plug
      * @return Whether or not the command succeeded, returning false will trigger
      *         onSyntaxError()
      */
-    public abstract int executeCommand(CommandSender sender, String commandLabel, String[] args);
+    public abstract ExitCode executeCommand(CommandSender sender, String commandLabel, String[] args);
 
     /**
      * This is a vastly simplified command class. We only check if the plugin is
@@ -110,17 +110,20 @@ public abstract class Command extends org.bukkit.command.Command implements Plug
 
         try {
             switch (this.executeCommand(sender, commandLabel, args)) {
-                case 0:
+                case EXIT_SUCCESS:
                     break;
-                case 1:
-                    this.onSyntaxError(sender, commandLabel, args);
-                case 2:
-                    this.onPermissionDenied(sender, commandLabel, args);
-                case 3:
-                    this.onError(sender, commandLabel, args);
+                case EXIT_INVALID_SYNTAX:
+                    onSyntaxError(sender, commandLabel, args);
+                    break;
+                case EXIT_PERMISSION_DENIED:
+                    onPermissionDenied(sender, commandLabel, args);
+                    break;
+                case EXIT_ERROR:
+                    onError(sender, commandLabel, args);
+                    break;
                 default:
                     throw new IllegalArgumentException("The exit code "
-                            + this.executeCommand(sender, commandLabel, args) + " is out of range");
+                            + executeCommand(sender, commandLabel, args) + " is out of range");
             }
         } catch (Exception ex) {
             throw new CommandException("Unhandled exception executing command '" + commandLabel + "' in plugin "
